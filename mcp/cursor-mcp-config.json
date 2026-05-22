@@ -1,0 +1,158 @@
+{
+  "_comment": "OpenForge MCP configuration template for Cursor (~/.cursor/mcp.json).",
+  "_instructions": "Fill in your credentials. Use environment variables ($VAR) for secrets. Never commit this file with real credentials.",
+
+  "mcpServers": {
+
+    "_group_code_communication": "─── Code & Communication ───────────────────────",
+
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_TOKEN"
+      }
+    },
+
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "$SLACK_BOT_TOKEN",
+        "SLACK_TEAM_ID": "YOUR_TEAM_ID"
+      }
+    },
+
+    "_group_data_warehouse": "─── Data Warehouse & Query ──────────────────────",
+
+    "bigquery": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-bigquery"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "$GOOGLE_APPLICATION_CREDENTIALS",
+        "BIGQUERY_PROJECT_ID": "YOUR_GCP_PROJECT_ID"
+      }
+    },
+
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "$POSTGRES_CONNECTION_STRING"
+      }
+    },
+
+    "trino": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-trino"],
+      "env": {
+        "TRINO_HOST": "YOUR_TRINO_HOST",
+        "TRINO_PORT": "8080",
+        "TRINO_USER": "YOUR_TRINO_USER",
+        "TRINO_PASSWORD": "$TRINO_PASSWORD",
+        "TRINO_CATALOG": "iceberg",
+        "TRINO_SCHEMA": "default"
+      }
+    },
+
+    "hive": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-hive"],
+      "env": {
+        "HIVE_HOST": "YOUR_HIVE_HOST",
+        "HIVE_PORT": "10000",
+        "HIVE_DATABASE": "default",
+        "HIVE_AUTH": "NONE"
+      }
+    },
+
+    "_group_orchestration": "─── Orchestration ────────────────────────────────",
+
+    "dagster": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-dagster"],
+      "env": {
+        "DAGSTER_GRAPHQL_URL": "http://YOUR_DAGSTER_HOST/graphql",
+        "DAGSTER_API_TOKEN": "$DAGSTER_API_TOKEN"
+      }
+    },
+
+    "airflow": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-airflow"],
+      "env": {
+        "AIRFLOW_HOST": "http://YOUR_AIRFLOW_HOST",
+        "AIRFLOW_USERNAME": "YOUR_AIRFLOW_USER",
+        "AIRFLOW_PASSWORD": "$AIRFLOW_PASSWORD"
+      }
+    },
+
+    "flink": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-flink"],
+      "env": {
+        "FLINK_JOBMANAGER_URL": "http://YOUR_FLINK_JOBMANAGER:8081"
+      }
+    },
+
+    "_group_observability": "─── Observability Stack ──────────────────────────",
+
+    "grafana": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-grafana"],
+      "env": {
+        "GRAFANA_URL": "http://YOUR_GRAFANA_HOST:3000",
+        "GRAFANA_API_KEY": "$GRAFANA_API_KEY"
+      }
+    },
+
+    "prometheus": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-prometheus"],
+      "env": {
+        "PROMETHEUS_URL": "http://YOUR_PROMETHEUS_HOST:9090"
+      }
+    },
+
+    "elasticsearch": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-elasticsearch"],
+      "env": {
+        "ELASTICSEARCH_URL": "http://YOUR_ES_HOST:9200",
+        "ELASTICSEARCH_API_KEY": "$ELASTICSEARCH_API_KEY"
+      }
+    },
+
+    "thanos": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-prometheus"],
+      "env": {
+        "PROMETHEUS_URL": "http://YOUR_THANOS_QUERIER:9090",
+        "_comment": "Thanos Querier exposes Prometheus-compatible API — use the same MCP"
+      }
+    },
+
+    "_group_kubernetes": "─── Cloud Infrastructure (Kubernetes) ───────────",
+
+    "kubernetes": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-kubernetes"],
+      "env": {
+        "KUBECONFIG": "$HOME/.kube/config",
+        "_comment": "Works for EKS, AKS, GKE — just point to the right kubeconfig context"
+      }
+    },
+
+    "_group_security": "─── Security & Access Control ───────────────────",
+
+    "apache-ranger": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-apache-ranger"],
+      "env": {
+        "RANGER_HOST": "http://YOUR_RANGER_HOST:6080",
+        "RANGER_USERNAME": "YOUR_RANGER_USER",
+        "RANGER_PASSWORD": "$RANGER_PASSWORD"
+      }
+    }
+  }
+}
