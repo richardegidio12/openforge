@@ -10,7 +10,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red)](https://github.com/your-username/openforge)
+[![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red)](https://github.com/richardegidio12/openforge)
 
 </div>
 
@@ -176,7 +176,7 @@ No setup. Works with Claude, ChatGPT, Gemini, or any LLM.
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/openforge.git
+   git clone https://github.com/richardegidio12/openforge.git
    ```
 2. Open a persona file in `personas/`
 3. Copy the **Activation Prompt** at the bottom
@@ -195,7 +195,7 @@ One conversation. Multiple personas. Artifacts saved automatically. The agent re
 **Setup (one time):**
 ```bash
 # In your project folder:
-git clone https://github.com/your-username/openforge.git openforge
+git clone https://github.com/richardegidio12/openforge.git openforge
 mkdir -p .cursor/rules
 cp openforge/.cursor/rules/openforge.mdc .cursor/rules/
 ```
@@ -230,7 +230,7 @@ Clone OpenForge **inside an existing project** and use it as an AI consultant th
 
 ```bash
 cd ~/your-existing-project
-git clone https://github.com/your-username/openforge.git openforge
+git clone https://github.com/richardegidio12/openforge.git openforge
 mkdir -p .cursor/rules
 cp openforge/.cursor/rules/openforge.mdc .cursor/rules/
 ```
@@ -310,7 +310,7 @@ OpenForge is open source and actively welcoming contributions.
 - 🐛 **Fixes** — inconsistencies, broken links, outdated content
 
 **How to start:**
-1. Open an [issue](https://github.com/your-username/openforge/issues) describing what you want to change
+1. Open an [issue](https://github.com/richardegidio12/openforge/issues) describing what you want to change
 2. Fork → branch → PR
 3. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for conventions
 

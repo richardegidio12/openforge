@@ -8,7 +8,7 @@ How to use OpenForge as a single, fluid session in Cursor, with automatic person
 
 1. Clone OpenForge somewhere fixed on your machine:
    ```bash
-   git clone https://github.com/your-username/openforge.git ~/openforge
+   git clone https://github.com/richardegidio12/openforge.git ~/openforge
    ```
 
 2. Create your project folder:

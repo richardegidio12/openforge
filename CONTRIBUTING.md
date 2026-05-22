@@ -31,7 +31,7 @@ This avoids duplicate work and ensures alignment before implementing.
 
 ```bash
 # Fork the repository on GitHub
-git clone https://github.com/your-username/openforge.git
+git clone https://github.com/richardegidio12/openforge.git
 cd openforge
 git checkout -b my-contribution
 ```
