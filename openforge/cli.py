@@ -114,6 +114,113 @@ def run(
 
 
 # ---------------------------------------------------------------------------
+# chat
+# ---------------------------------------------------------------------------
+
+@app.command()
+def chat(
+    mock: bool = typer.Option(
+        False, "--mock",
+        help="Use mock AI responses (demo mode, no API key needed)"
+    ),
+):
+    """Start a conversational session — describe your pipeline in natural language."""
+    from openforge.metadata import store
+    from openforge.llm import chat as chat_engine
+    from rich.markdown import Markdown
+    from rich.rule import Rule
+    import yaml as _yaml
+
+    if not store.is_initialized():
+        console.print("[red]✗ No project found.[/] Run [bold]openforge init[/] first.")
+        raise typer.Exit(1)
+
+    meta = store.load()
+
+    # Collect source files
+    source_files = sorted(Path("sample_data").glob("*.csv")) if Path("sample_data").exists() else []
+
+    # Build system prompt with full project context
+    system = chat_engine.build_system_prompt(meta, source_files)
+
+    # Header
+    mock_tag = "  [dim](mock mode — responses are simulated)[/]" if mock else ""
+    console.print()
+    console.print(
+        f"[bold blue]◆ OpenForge Chat[/] · [bold]{meta.project_name}[/]{mock_tag}"
+    )
+    console.print(
+        f"  [dim]{len(meta.tables)} table(s) in context · "
+        f"type your request, [bold]exit[/] to quit[/]"
+    )
+    console.print()
+
+    history: list[dict] = []
+
+    while True:
+        # Prompt
+        try:
+            user_input = console.input("[bold cyan]you[/] › ").strip()
+        except (EOFError, KeyboardInterrupt):
+            console.print("\n[dim]Session ended.[/]")
+            break
+
+        if not user_input:
+            continue
+
+        if user_input.lower() in ("exit", "quit", "sair", "q"):
+            console.print("[dim]Session ended.[/]")
+            break
+
+        # Add to history
+        history.append({"role": "user", "content": user_input})
+
+        # Get response
+        try:
+            with console.status("[dim]Thinking...[/]"):
+                response = chat_engine.send(
+                    messages=history,
+                    system=system,
+                    mock=mock,
+                    user_input=user_input,
+                )
+        except EnvironmentError as e:
+            console.print(f"\n[red]✗ {e}[/]")
+            console.print("[dim]Tip: run with [bold]--mock[/] for demo mode[/]\n")
+            history.pop()
+            continue
+        except Exception as e:
+            console.print(f"\n[red]✗ Error: {e}[/]\n")
+            history.pop()
+            continue
+
+        # Add assistant response to history
+        history.append({"role": "assistant", "content": response})
+
+        # Render response
+        console.print()
+        console.print("[bold green]openforge[/] ›")
+        console.print(Markdown(response))
+        console.print()
+
+        # If response contains a pipeline YAML, offer to save it
+        pipeline_yaml = chat_engine.extract_pipeline_yaml(response)
+        if pipeline_yaml:
+            save = console.input(
+                "[dim]Pipeline generated. Save as[/] [bold]pipeline.yaml[/][dim]? (y/N)[/] › "
+            ).strip().lower()
+            if save in ("y", "yes", "sim", "s"):
+                # Parse to validate before saving
+                try:
+                    _yaml.safe_load(pipeline_yaml)
+                    Path("pipeline.yaml").write_text(pipeline_yaml)
+                    console.print("[green]✓ Saved pipeline.yaml[/]  Run: [bold]openforge run[/]")
+                except Exception as e:
+                    console.print(f"[red]✗ Invalid YAML: {e}[/]")
+            console.print()
+
+
+# ---------------------------------------------------------------------------
 # status
 # ---------------------------------------------------------------------------
 
