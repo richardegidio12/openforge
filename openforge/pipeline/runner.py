@@ -34,13 +34,14 @@ def load_pipeline(pipeline_path: str) -> PipelineDefinition:
     return PipelineDefinition.model_validate(data)
 
 
-def run(pipeline_path: str, use_llm: bool = False) -> bool:
+def run(pipeline_path: str, use_llm: bool = False, mock: bool = False) -> bool:
     """
     Execute a pipeline. Returns True if all steps passed.
 
     Args:
         pipeline_path: Path to pipeline.yaml.
-        use_llm: If True, doc generation steps will call the Anthropic API.
+        use_llm: If True, doc generation steps are active (real or mock).
+        mock: If True, doc generation uses mock responses instead of the real API.
     """
     pipeline = load_pipeline(pipeline_path)
     meta = store.load()
@@ -66,7 +67,7 @@ def run(pipeline_path: str, use_llm: bool = False) -> bool:
                 if not ok:
                     success = False
             elif step.type == "docs":
-                _run_docs(step, use_llm)
+                _run_docs(step, use_llm, mock)
             elif step.type == "transform":
                 console.print("    [yellow]⚠ transform steps coming in Phase 2[/]")
             else:
@@ -138,7 +139,7 @@ def _run_quality(step: PipelineStep) -> bool:
     return result.passed_all
 
 
-def _run_docs(step: PipelineStep, use_llm: bool) -> None:
+def _run_docs(step: PipelineStep, use_llm: bool, mock: bool = False) -> None:
     if not use_llm:
         console.print("    [dim]⊘ AI docs skipped · run with [bold]--docs[/] to enable[/]")
         return
@@ -153,8 +154,9 @@ def _run_docs(step: PipelineStep, use_llm: bool) -> None:
             "Run the ingest step before docs."
         )
 
-    with console.status(f"    Generating docs with AI..."):
-        docs = llm.generate_table_docs(table)
+    label = "Generating docs [dim](mock mode)[/]..." if mock else "Generating docs with AI..."
+    with console.status(f"    {label}"):
+        docs = llm.generate_table_docs(table, mock=mock)
 
     table.description = docs.get("table_description", "")
     col_docs: dict = docs.get("columns", {})
@@ -164,8 +166,9 @@ def _run_docs(step: PipelineStep, use_llm: bool) -> None:
 
     store.upsert_table(table)
     described = sum(1 for c in table.columns if c.description)
+    mock_tag = " [dim](mock)[/]" if mock else ""
     console.print(
-        f"    [green]✓[/] Docs generated for [bold]{step.table}[/] · "
+        f"    [green]✓[/] Docs generated for [bold]{step.table}[/]{mock_tag} · "
         f"[cyan]{described}[/] columns described"
     )
 

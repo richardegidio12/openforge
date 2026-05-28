@@ -95,6 +95,10 @@ def run(
         False, "--docs", "-d",
         help="Generate AI documentation for tables (requires ANTHROPIC_API_KEY)"
     ),
+    mock: bool = typer.Option(
+        False, "--mock",
+        help="Simulate AI documentation without calling the API (demo / dev mode)"
+    ),
 ):
     """Execute a pipeline — ingest, validate, and optionally document your data."""
     from openforge.metadata import store
@@ -104,7 +108,7 @@ def run(
         console.print("[red]✗ No project found.[/] Run [bold]openforge init[/] first.")
         raise typer.Exit(1)
 
-    success = runner.run(pipeline, use_llm=docs)
+    success = runner.run(pipeline, use_llm=docs or mock, mock=mock)
     if not success:
         raise typer.Exit(1)
 
