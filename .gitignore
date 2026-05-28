@@ -10,3 +10,21 @@ Thumbs.db
 # Temp
 *.tmp
 *.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.egg
+
+# OpenForge runtime (warehouse stays local, metadata can be committed)
+.openforge/warehouse.db
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,39 @@
+name: sales_demo_pipeline
+version: "0.1.0"
+description: "Demo pipeline — processes sample sales data end-to-end"
+
+sources:
+  - name: sales_raw
+    type: csv
+    path: sample_data/sales.csv
+
+steps:
+  # Step 1: Ingest CSV into DuckDB warehouse
+  - name: ingest_sales
+    type: ingest
+    source: sales_raw
+    target: sales
+
+  # Step 2: Validate data quality
+  - name: validate_sales
+    type: quality
+    table: sales
+    rules:
+      - column: order_id
+        checks: [not_null, unique]
+      - column: customer_id
+        checks: [not_null]
+      - column: total_amount
+        checks: [not_null]
+        min_value: 0
+      - column: quantity
+        checks: [not_null]
+        min_value: 1
+      - column: order_date
+        checks: [not_null]
+
+  # Step 3: Generate AI documentation (run with: openforge run --docs)
+  - name: document_sales
+    type: docs
+    table: sales
+    use_llm: true

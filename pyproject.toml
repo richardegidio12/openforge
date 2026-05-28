@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openforge"
+version = "0.1.0"
+description = "AI-native data engineering platform — from raw CSV to validated, documented tables"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+    { name = "Richard Egidio", email = "egidiorichard@gmail.com" }
+]
+keywords = ["data-engineering", "ai", "duckdb", "pipeline", "metadata"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Database",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "typer>=0.12",
+    "duckdb>=0.10",
+    "pydantic>=2.0",
+    "anthropic>=0.25",
+    "pyyaml>=6.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+
+[project.scripts]
+openforge = "openforge.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/richardegidio12/openforge"
+Repository = "https://github.com/richardegidio12/openforge"
+Issues = "https://github.com/richardegidio12/openforge/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 124">
+  <defs>
+    <linearGradient id="c1flame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%"   stop-color="#7B3F10"/>
+      <stop offset="30%"  stop-color="#A0522D"/>
+      <stop offset="58%"  stop-color="#A8ADB5"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </linearGradient>
+    <filter id="c1glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <clipPath id="c1clip">
+      <path d="M 20 110 C 10 88 16 62 30 48 C 38 39 47 24 56 10 C 65 24 74 39 82 48 C 96 62 102 88 92 110 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Glow halo behind flame -->
+  <path d="M 20 110 C 10 88 16 62 30 48 C 38 39 47 24 56 10 C 65 24 74 39 82 48 C 96 62 102 88 92 110 Z"
+        fill="#F5A623" opacity="0.12" filter="url(#c1glow)"/>
+
+  <!-- Main flame shape -->
+  <path d="M 20 110 C 10 88 16 62 30 48 C 38 39 47 24 56 10 C 65 24 74 39 82 48 C 96 62 102 88 92 110 Z"
+        fill="url(#c1flame)"/>
+
+  <!-- Layer separators clipped to flame -->
+  <g clip-path="url(#c1clip)">
+    <rect x="0" y="72" width="120" height="1.5" fill="rgba(255,255,255,0.22)"/>
+    <rect x="0" y="44" width="120" height="1.5" fill="rgba(255,255,255,0.22)"/>
+  </g>
+
+  <!-- Gold tip glow -->
+  <ellipse cx="56" cy="24" rx="16" ry="11" fill="#FFD700" opacity="0.25" filter="url(#c1glow)"/>
+
+  <!-- Open (light) -->
+  <text x="120" y="65"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="44" font-weight="300" letter-spacing="-2" fill="#1C1C2E">Open</text>
+
+  <!-- Forge (black/heavy) -->
+  <text x="252" y="65"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="44" font-weight="800" letter-spacing="-2" fill="#1C1C2E">Forge</text>
+
+  <!-- Gold underline on Forge -->
+  <rect x="252" y="71" width="150" height="3.5" rx="1.75" fill="#F5A623"/>
+
+  <!-- Tagline -->
+  <text x="121" y="93"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="11.5" font-weight="400" fill="#888" letter-spacing="0.5">
+    Open Framework for data-platform Engineering
+  </text>
+</svg>

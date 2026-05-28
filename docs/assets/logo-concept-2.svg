@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 124">
+  <defs>
+    <linearGradient id="c2bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#1C2A40"/>
+    </linearGradient>
+    <linearGradient id="c2gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#F5A623"/>
+      <stop offset="100%" stop-color="#FFD700"/>
+    </linearGradient>
+    <filter id="c2glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- App icon square -->
+  <rect x="8" y="8" width="96" height="96" rx="20" fill="url(#c2bg)"/>
+
+  <!-- Three data layer bars inside square (Bronze, Silver, Gold) -->
+  <!-- Bronze bar -->
+  <rect x="20" y="74" width="64" height="11" rx="3" fill="#A0522D" opacity="0.9"/>
+  <!-- Silver bar -->
+  <rect x="26" y="56" width="52" height="11" rx="3" fill="#B8BEC4" opacity="0.9"/>
+  <!-- Gold bar (with glow) -->
+  <rect x="33" y="38" width="38" height="11" rx="3" fill="url(#c2gold)" filter="url(#c2glow)"/>
+
+  <!-- Small spark above gold -->
+  <polygon points="52,32 54,26 56,32" fill="#FFD700" opacity="0.85"/>
+  <polygon points="55,31 57.5,25 60,31" fill="#FFF176" opacity="0.6"/>
+
+  <!-- "Open" in regular weight -->
+  <text x="122" y="59"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="40" font-weight="300" letter-spacing="-1.5" fill="#1C1C2E">Open</text>
+
+  <!-- "Forge" in black weight -->
+  <text x="248" y="59"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="40" font-weight="900" letter-spacing="-1.5" fill="#0D1117">Forge</text>
+
+  <!-- Gold accent dot after Forge -->
+  <circle cx="400" cy="50" r="5" fill="url(#c2gold)"/>
+
+  <!-- Thin gold separator line -->
+  <rect x="122" y="67" width="284" height="1.5" rx="0.75" fill="#F5A623" opacity="0.4"/>
+
+  <!-- Tagline -->
+  <text x="122" y="87"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="11.5" font-weight="400" fill="#888" letter-spacing="0.5">
+    Open Framework for data-platform Engineering
+  </text>
+</svg>

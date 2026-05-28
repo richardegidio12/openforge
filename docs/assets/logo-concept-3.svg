@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 124">
+  <defs>
+    <linearGradient id="c3bronze" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#CD7F32"/>
+      <stop offset="100%" stop-color="#8B4513"/>
+    </linearGradient>
+    <linearGradient id="c3silver" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#D4D8DC"/>
+      <stop offset="100%" stop-color="#9EA3A8"/>
+    </linearGradient>
+    <linearGradient id="c3gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#F5A623"/>
+    </linearGradient>
+    <filter id="c3glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- HEXAGON helper: flat-top, center cx cy, radius r -->
+  <!-- Hex points: (cx, cy-r), (cx+r*0.866, cy-r*0.5), (cx+r*0.866, cy+r*0.5),
+                   (cx, cy+r), (cx-r*0.866, cy+r*0.5), (cx-r*0.866, cy-r*0.5) -->
+
+  <!-- Bronze hexagon — center (28, 58), r=24 -->
+  <!-- points: 28,34  48.8,46  48.8,70  28,82  7.2,70  7.2,46 -->
+  <polygon points="28,34 48.8,46 48.8,70 28,82 7.2,70 7.2,46"
+           fill="url(#c3bronze)" stroke="#7B3F10" stroke-width="1.5"/>
+  <text x="28" y="64" text-anchor="middle"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="13" font-weight="700" fill="rgba(255,255,255,0.85)">B</text>
+
+  <!-- Arrow Bronze → Silver -->
+  <path d="M 51 55 L 60 55 M 57 51 L 62 55 L 57 59" fill="none"
+        stroke="#CCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Silver hexagon — center (76, 58), r=24 -->
+  <!-- points: 76,34  96.8,46  96.8,70  76,82  55.2,70  55.2,46 -->
+  <!-- Shift right by gap: left edge needs to be clear of arrow. Use center x=78 -->
+  <polygon points="78,34 98.8,46 98.8,70 78,82 57.2,70 57.2,46"
+           fill="url(#c3silver)" stroke="#8A8F94" stroke-width="1.5"/>
+  <text x="78" y="64" text-anchor="middle"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="13" font-weight="700" fill="rgba(255,255,255,0.85)">S</text>
+
+  <!-- Arrow Silver → Gold -->
+  <path d="M 101 55 L 110 55 M 107 51 L 112 55 L 107 59" fill="none"
+        stroke="#CCC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Gold hexagon — center (126, 58), r=24, with glow -->
+  <polygon points="128,34 148.8,46 148.8,70 128,82 107.2,70 107.2,46"
+           fill="#F5A623" opacity="0.15" filter="url(#c3glow)"/>
+  <polygon points="128,34 148.8,46 148.8,70 128,82 107.2,70 107.2,46"
+           fill="url(#c3gold)" stroke="#D4880A" stroke-width="1.5"/>
+  <text x="128" y="64" text-anchor="middle"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="13" font-weight="700" fill="rgba(30,20,0,0.8)">G</text>
+
+  <!-- "Open" light -->
+  <text x="170" y="59"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="40" font-weight="300" letter-spacing="-1.5" fill="#1C1C2E">Open</text>
+
+  <!-- "Forge" bold -->
+  <text x="295" y="59"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="40" font-weight="800" letter-spacing="-1.5" fill="#1C1C2E">Forge</text>
+
+  <!-- Gold underline on Forge -->
+  <rect x="295" y="65" width="147" height="3" rx="1.5" fill="url(#c3gold)"/>
+
+  <!-- Tagline -->
+  <text x="170" y="87"
+        font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+        font-size="11.5" font-weight="400" fill="#888" letter-spacing="0.5">
+    Open Framework for data-platform Engineering
+  </text>
+</svg>
