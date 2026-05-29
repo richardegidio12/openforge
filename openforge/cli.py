@@ -468,6 +468,48 @@ def connect(
 
 
 # ---------------------------------------------------------------------------
+# ui
+# ---------------------------------------------------------------------------
+
+@app.command()
+def ui(
+    host: str = typer.Option("127.0.0.1", "--host", help="Host to bind"),
+    port: int = typer.Option(7433, "--port", "-p", help="Port to listen on"),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Open browser automatically"),
+):
+    """Start the web dashboard (http://localhost:7433)."""
+    try:
+        import uvicorn
+    except ImportError:
+        console.print("[red]✗ uvicorn not installed.[/] Run: pip install uvicorn")
+        raise typer.Exit(1)
+
+    from openforge.metadata import store
+    if not store.is_initialized():
+        console.print("[red]✗ No project found.[/] Run [bold]openforge init[/] first.")
+        raise typer.Exit(1)
+
+    url = f"http://{host}:{port}"
+    console.print(f"\n[bold blue]◆ OpenForge UI[/]  →  [bold cyan]{url}[/]")
+    console.print("  [dim]Press Ctrl+C to stop[/]\n")
+
+    if open_browser:
+        import threading, webbrowser, time
+        def _open():
+            time.sleep(0.8)
+            webbrowser.open(url)
+        threading.Thread(target=_open, daemon=True).start()
+
+    uvicorn.run(
+        "openforge.ui.server:app",
+        host=host,
+        port=port,
+        log_level="warning",
+        reload=False,
+    )
+
+
+# ---------------------------------------------------------------------------
 # status
 # ---------------------------------------------------------------------------
 

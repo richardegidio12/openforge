@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ table_name }} — OpenForge{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="text-sm text-slate-400 mb-6">
+  <a href="/" class="hover:text-blue-600">Dashboard</a>
+  <span class="mx-2">›</span>
+  <span class="text-slate-700 font-medium">{{ table_name }}</span>
+</div>
+
+<!-- Header -->
+<div class="flex items-start justify-between mb-8">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">{{ table_name }}</h1>
+    {% if description %}
+      <p class="text-slate-500 mt-2 max-w-2xl">{{ description }}</p>
+    {% endif %}
+    <div class="flex gap-4 mt-3 text-sm text-slate-500">
+      <span><strong class="text-slate-700">{{ "{:,}".format(row_count) }}</strong> rows</span>
+      <span><strong class="text-slate-700">{{ columns|length }}</strong> columns</span>
+      <span>Source: <span class="font-mono text-xs">{{ source }}</span></span>
+    </div>
+  </div>
+
+  {% if quality %}
+  <div class="text-right">
+    <div class="text-3xl font-bold {% if quality.passed_all %}text-green-600{% else %}text-red-600{% endif %}">
+      {{ quality.score }}%
+    </div>
+    <div class="text-xs text-slate-500 mt-1">
+      {{ quality.passed }}/{{ quality.total }} checks passed
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Quality checks -->
+{% if checks %}
+<div class="bg-white rounded-xl border border-slate-200 mb-8">
+  <div class="px-6 py-4 border-b border-slate-100">
+    <h2 class="font-semibold text-slate-800">Quality Checks</h2>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-6 py-3">Column</th>
+        <th class="text-left px-4 py-3">Rule</th>
+        <th class="text-center px-4 py-3">Status</th>
+        <th class="text-left px-4 py-3">Message</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for c in checks %}
+      <tr>
+        <td class="px-6 py-3 font-mono text-xs font-semibold">{{ c.column }}</td>
+        <td class="px-4 py-3 text-slate-500 font-mono text-xs">{{ c.rule }}</td>
+        <td class="text-center px-4 py-3">
+          {% if c.status == "pass" %}
+            <span class="badge-pass px-2 py-1 rounded-full text-xs">✓ pass</span>
+          {% elif c.status == "fail" %}
+            <span class="badge-fail px-2 py-1 rounded-full text-xs">✗ fail</span>
+          {% else %}
+            <span class="badge-warn px-2 py-1 rounded-full text-xs">{{ c.status }}</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-slate-500 text-xs">{{ c.message }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Columns -->
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <h2 class="font-semibold text-slate-800">Columns</h2>
+    <span class="text-xs text-slate-400">{{ columns|length }} column(s)</span>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-6 py-3">Column</th>
+        <th class="text-left px-4 py-3">Type</th>
+        <th class="text-right px-4 py-3">Nulls</th>
+        <th class="text-right px-4 py-3">Distinct</th>
+        <th class="text-left px-4 py-3">Samples</th>
+        <th class="text-left px-4 py-3">Description</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for col in columns %}
+      <tr class="{% if col.null_count > 0 %}bg-yellow-50/30{% endif %}">
+        <td class="px-6 py-4 font-mono text-xs font-semibold text-slate-800">{{ col.name }}</td>
+        <td class="px-4 py-4">
+          <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-mono">
+            {{ col.type }}
+          </span>
+        </td>
+        <td class="text-right px-4 py-4 text-xs">
+          {% if col.null_count > 0 %}
+            <span class="text-yellow-700 font-medium">{{ col.null_count }}</span>
+            <span class="text-slate-400">({{ col.null_pct }}%)</span>
+          {% else %}
+            <span class="text-green-600">0</span>
+          {% endif %}
+        </td>
+        <td class="text-right px-4 py-4 text-xs text-slate-500">
+          {{ "{:,}".format(col.distinct_count) if col.distinct_count else "—" }}
+        </td>
+        <td class="px-4 py-4 text-xs text-slate-400 font-mono">
+          {{ col.sample_values | join(", ") if col.sample_values else "—" }}
+        </td>
+        <td class="px-4 py-4 text-xs text-slate-600 max-w-xs">
+          {% if col.description %}
+            {{ col.description }}
+          {% else %}
+            <span class="text-slate-300 italic">No description — run with --docs</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — OpenForge{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
+  <p class="text-slate-500 mt-1">Project: <strong>{{ project_name }}</strong></p>
+</div>
+
+<!-- Stat cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="text-3xl font-bold text-blue-600">{{ total_tables }}</div>
+    <div class="text-sm text-slate-500 mt-1">Tables</div>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="text-3xl font-bold text-slate-700">{{ "{:,}".format(total_rows) }}</div>
+    <div class="text-sm text-slate-500 mt-1">Total rows</div>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    {% if avg_quality is not none %}
+      <div class="text-3xl font-bold {% if avg_quality >= 90 %}text-green-600{% elif avg_quality >= 70 %}text-yellow-600{% else %}text-red-600{% endif %}">
+        {{ avg_quality }}%
+      </div>
+    {% else %}
+      <div class="text-3xl font-bold text-slate-400">—</div>
+    {% endif %}
+    <div class="text-sm text-slate-500 mt-1">Avg quality</div>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="text-3xl font-bold text-slate-700">{{ total_runs }}</div>
+    <div class="text-sm text-slate-500 mt-1">Runs</div>
+  </div>
+</div>
+
+<!-- Tables -->
+<div class="bg-white rounded-xl border border-slate-200 mb-8">
+  <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <h2 class="font-semibold text-slate-800">Tables</h2>
+    <span class="text-xs text-slate-400">{{ total_tables }} table(s)</span>
+  </div>
+  {% if tables %}
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-6 py-3">Table</th>
+        <th class="text-right px-4 py-3">Rows</th>
+        <th class="text-right px-4 py-3">Columns</th>
+        <th class="text-center px-4 py-3">Quality</th>
+        <th class="text-center px-4 py-3">Docs</th>
+        <th class="text-left px-4 py-3">Source</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for t in tables %}
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="px-6 py-4">
+          <a href="/table/{{ t.name }}" class="font-semibold text-blue-600 hover:underline">
+            {{ t.name }}
+          </a>
+        </td>
+        <td class="text-right px-4 py-4 text-slate-600 font-mono text-xs">
+          {{ "{:,}".format(t.rows) }}
+        </td>
+        <td class="text-right px-4 py-4 text-slate-500">{{ t.columns }}</td>
+        <td class="text-center px-4 py-4">
+          {% if t.quality_score is not none %}
+            <span class="px-2 py-1 rounded-full text-xs font-medium
+              {% if t.quality_passed %}badge-pass{% else %}badge-fail{% endif %}">
+              {{ t.quality_score }}%
+            </span>
+          {% else %}
+            <span class="badge-none px-2 py-1 rounded-full text-xs">—</span>
+          {% endif %}
+        </td>
+        <td class="text-center px-4 py-4">
+          {% if t.has_docs %}
+            <span class="text-green-600 font-bold">✓</span>
+          {% else %}
+            <span class="text-slate-300">—</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-4 text-slate-400 text-xs">{{ t.source }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="px-6 py-12 text-center text-slate-400">
+    No tables yet. Run <code class="bg-slate-100 px-1 rounded">openforge run</code> to ingest data.
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recent runs -->
+{% if runs %}
+<div class="bg-white rounded-xl border border-slate-200">
+  <div class="px-6 py-4 border-b border-slate-100">
+    <h2 class="font-semibold text-slate-800">Recent Runs</h2>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-6 py-3">Pipeline</th>
+        <th class="text-left px-4 py-3">Started</th>
+        <th class="text-center px-4 py-3">Steps</th>
+        <th class="text-center px-4 py-3">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for r in runs %}
+      <tr>
+        <td class="px-6 py-3 font-medium">{{ r.pipeline }}</td>
+        <td class="px-4 py-3 text-slate-500 text-xs">{{ r.started_at }}</td>
+        <td class="text-center px-4 py-3 text-slate-500">{{ r.steps }}</td>
+        <td class="text-center px-4 py-3">
+          {% if r.success %}
+            <span class="badge-pass px-2 py-1 rounded-full text-xs font-medium">success</span>
+          {% else %}
+            <span class="badge-fail px-2 py-1 rounded-full text-xs font-medium">failed</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}

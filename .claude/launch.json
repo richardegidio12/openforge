@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "openforge-ui",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "uvicorn", "openforge.ui.server:app", "--host", "127.0.0.1", "--port", "7433", "--log-level", "warning"],
+      "port": 7433
+    }
+  ]
+}
