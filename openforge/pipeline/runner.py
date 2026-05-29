@@ -82,6 +82,16 @@ def run(pipeline_path: str, use_llm: bool = False, mock: bool = False) -> bool:
     run_log.success = success
     run_log.steps_run = steps_run
     meta = store.load()
+
+    if not success:
+        # Find the table with the lowest quality score to hint at heal target
+        failed_tables = [
+            t for t, qr in meta.quality_results.items() if not qr.passed_all
+        ]
+        hint = f" [bold]{failed_tables[0]}[/]" if failed_tables else ""
+        console.print(
+            f"  [dim]💡 Run [bold]openforge heal{hint}[/] to diagnose and get fix proposals[/]\n"
+        )
     meta.runs.append(run_log)
     store.save(meta)
 

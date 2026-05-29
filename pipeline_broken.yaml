@@ -1,0 +1,31 @@
+name: sales_broken_demo
+version: "0.1.0"
+description: "Demo pipeline with intentional data quality failures — use with openforge heal"
+
+sources:
+  - name: sales_broken_raw
+    type: csv
+    path: sample_data/sales_broken.csv
+
+steps:
+  - name: ingest_sales_broken
+    type: ingest
+    source: sales_broken_raw
+    target: sales_broken
+
+  - name: validate_sales_broken
+    type: quality
+    table: sales_broken
+    rules:
+      - column: order_id
+        checks: [not_null, unique]      # ← will FAIL: ORD-002 is duplicated
+      - column: customer_id
+        checks: [not_null]              # ← will FAIL: 2 null customer_ids
+      - column: total_amount
+        checks: [not_null]
+        min_value: 0                    # ← will FAIL: one row has -399.00
+      - column: quantity
+        checks: [not_null]
+        min_value: 1                    # ← will FAIL: one row has quantity=0
+      - column: order_date
+        checks: [not_null]              # ← will PASS

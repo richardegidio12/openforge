@@ -221,6 +221,153 @@ def chat(
 
 
 # ---------------------------------------------------------------------------
+# heal
+# ---------------------------------------------------------------------------
+
+@app.command()
+def heal(
+    table: Optional[str] = typer.Argument(None, help="Table to heal (defaults to last failed table)"),
+):
+    """Diagnose quality failures and get fix proposals for your data."""
+    from openforge.metadata import store
+    from openforge.agents import healer
+    from rich.panel import Panel
+
+    if not store.is_initialized():
+        console.print("[red]✗ No project found.[/] Run [bold]openforge init[/] first.")
+        raise typer.Exit(1)
+
+    meta = store.load()
+
+    if not meta.quality_results:
+        console.print("[yellow]⚠ No quality results found.[/] Run [bold]openforge run[/] first.")
+        raise typer.Exit(1)
+
+    # Find target table
+    target = table
+    if not target:
+        # Pick the table with the lowest quality score
+        target = min(meta.quality_results, key=lambda t: meta.quality_results[t].score)
+
+    result = meta.quality_results.get(target)
+    if not result:
+        console.print(f"[red]✗ No quality results for table '{target}'.[/]")
+        raise typer.Exit(1)
+
+    schema = meta.tables.get(target)
+    if not schema:
+        console.print(f"[red]✗ Table '{target}' not found in metadata.[/]")
+        raise typer.Exit(1)
+
+    if result.passed_all:
+        console.print(
+            f"\n[green]✓ Table [bold]{target}[/] is healthy[/] — "
+            f"quality score [bold]{result.score}%[/] · all {result.total} checks passed.\n"
+        )
+        return
+
+    # Run analysis
+    report = healer.analyze(result, schema)
+
+    console.print(f"\n[bold blue]◆ OpenForge Heal[/] · [bold]{target}[/]\n")
+    console.print(
+        f"  Quality score: [red]{report.quality_score}%[/]  ·  "
+        f"[red]{report.critical_count} critical[/]  ·  "
+        f"[yellow]{report.warning_count} warning[/]\n"
+    )
+
+    for i, proposal in enumerate(report.proposals, 1):
+        severity_color = "red" if proposal.severity == "critical" else "yellow"
+        severity_icon = "✗" if proposal.severity == "critical" else "⚠"
+
+        console.print(
+            Panel(
+                f"[bold]{proposal.column}[/]  ·  rule: [dim]{proposal.rule}[/]  ·  "
+                f"[{severity_color}]{severity_icon} {proposal.severity.upper()}[/]\n\n"
+                f"[bold]Diagnosis:[/] {proposal.diagnosis}\n\n"
+                f"[bold]Proposal:[/]  {proposal.proposal}",
+                title=f"[{severity_color}]Issue {i} of {len(report.proposals)}[/]",
+                border_style=severity_color,
+                padding=(0, 1),
+            )
+        )
+
+    console.print(
+        f"\n[dim]Fix the issues above, then re-run: [bold]openforge run[/][/]\n"
+    )
+
+
+# ---------------------------------------------------------------------------
+# inspect
+# ---------------------------------------------------------------------------
+
+@app.command()
+def inspect(
+    table: str = typer.Argument(..., help="Table name to profile"),
+):
+    """Show detailed column statistics for a table in the warehouse."""
+    from openforge.metadata import store
+    from openforge.agents import profiler
+    from rich.table import Table as RichTable
+
+    if not store.is_initialized():
+        console.print("[red]✗ No project found.[/] Run [bold]openforge init[/] first.")
+        raise typer.Exit(1)
+
+    meta = store.load()
+    if table not in meta.tables:
+        available = ", ".join(meta.tables.keys()) or "none"
+        console.print(f"[red]✗ Table '{table}' not found.[/] Available: {available}")
+        raise typer.Exit(1)
+
+    with console.status(f"Profiling [bold]{table}[/]..."):
+        report = profiler.profile(table)
+
+    console.print(f"\n[bold blue]◆ OpenForge Inspect[/] · [bold]{table}[/]")
+    console.print(f"  [dim]{report.row_count:,} rows · {report.column_count} columns[/]\n")
+
+    t = RichTable(show_header=True, header_style="bold cyan", border_style="dim")
+    t.add_column("Column")
+    t.add_column("Type", style="dim")
+    t.add_column("Nulls", justify="right")
+    t.add_column("Distinct", justify="right")
+    t.add_column("Min", justify="right")
+    t.add_column("Avg", justify="right")
+    t.add_column("Max", justify="right")
+    t.add_column("Top Values", max_width=40)
+
+    for col in report.columns:
+        null_str = (
+            f"[red]{col.null_count}[/] [dim]({col.null_pct}%)[/]"
+            if col.null_count > 0
+            else f"[green]0[/]"
+        )
+        distinct_str = f"{col.distinct_count:,} [dim]({col.distinct_pct}%)[/]"
+
+        min_str = str(col.min_val) if col.min_val is not None else "[dim]—[/]"
+        avg_str = str(col.avg_val) if col.avg_val is not None else "[dim]—[/]"
+        max_str = str(col.max_val) if col.max_val is not None else "[dim]—[/]"
+
+        top = ", ".join(
+            f"{v}×{c}" for v, c in col.top_values[:3]
+        ) if col.top_values else "—"
+
+        t.add_row(
+            f"[bold]{col.name}[/]",
+            col.type,
+            null_str,
+            distinct_str,
+            min_str,
+            avg_str,
+            max_str,
+            f"[dim]{top}[/]",
+        )
+
+    console.print(t)
+    console.print()
+
+
+# ---------------------------------------------------------------------------
 # status
 # ---------------------------------------------------------------------------
 
