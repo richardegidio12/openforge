@@ -95,12 +95,43 @@ class PipelineStep(BaseModel):
     sql: Optional[str] = None
 
 
+class ConnectorConfig(BaseModel):
+    """
+    Target connector configuration — declared in pipeline.yaml under `connector:`.
+
+    If absent from the pipeline, DuckDB local warehouse is used by default.
+
+    Note: `db_schema` maps to `schema` in pipeline.yaml via model_config alias.
+    """
+
+    model_config = {"populate_by_name": True}
+
+    type: str = "duckdb"            # duckdb | trino | bigquery | snowflake
+    # Trino
+    host: Optional[str] = None
+    port: Optional[int] = None
+    user: Optional[str] = None
+    catalog: Optional[str] = None
+    db_schema: Optional[str] = Field(None, alias="schema")   # `schema` is reserved in Pydantic
+    http_scheme: Optional[str] = "http"
+    password: Optional[str] = None
+    # BigQuery
+    project: Optional[str] = None
+    dataset: Optional[str] = None
+    credentials_path: Optional[str] = None
+    # Snowflake
+    account: Optional[str] = None
+    warehouse: Optional[str] = None
+    database: Optional[str] = None
+
+
 class PipelineDefinition(BaseModel):
     """Full pipeline definition — loaded from pipeline.yaml."""
 
     name: str
     version: str = "0.1.0"
     description: Optional[str] = None
+    connector: Optional[ConnectorConfig] = None   # None → defaults to DuckDB
     sources: list[PipelineSource] = Field(default_factory=list)
     steps: list[PipelineStep] = Field(default_factory=list)
 

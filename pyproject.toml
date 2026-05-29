@@ -25,6 +25,7 @@ dependencies = [
     "typer>=0.12",
     "duckdb>=0.10",
     "pydantic>=2.0",
+    "trino>=0.328",
     "anthropic>=0.25",
     "pyyaml>=6.0",
     "rich>=13.0",

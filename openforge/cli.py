@@ -368,6 +368,106 @@ def inspect(
 
 
 # ---------------------------------------------------------------------------
+# connect
+# ---------------------------------------------------------------------------
+
+@app.command()
+def connect(
+    connector_type: str = typer.Argument("duckdb", help="Connector to test: duckdb, trino"),
+    host: str = typer.Option("localhost", "--host", help="Host (Trino)"),
+    port: int = typer.Option(8080, "--port", help="Port (Trino default: 8080)"),
+    user: str = typer.Option("admin", "--user", help="Username (Trino)"),
+    catalog: str = typer.Option("hive", "--catalog", help="Catalog (Trino)"),
+    schema: str = typer.Option("default", "--schema", help="Schema (Trino)"),
+    http_scheme: str = typer.Option("http", "--http-scheme", help="http or https (Trino)"),
+    password: str = typer.Option("", "--password", help="Password (Trino, optional)"),
+):
+    """Test a connector connection and show available tables."""
+    from openforge.connectors.registry import get_connector
+    from openforge.connectors.trino_connector import TrinoConfig, TrinoConnector
+    from rich.table import Table as RichTable
+
+    ct = connector_type.lower().strip()
+
+    console.print(f"\n[bold blue]◆ OpenForge Connect[/] · [bold]{ct}[/]\n")
+
+    try:
+        if ct == "duckdb":
+            connector = get_connector({"type": "duckdb"})
+            with console.status("Testing DuckDB connection..."):
+                ok = connector.test_connection()
+            console.print(f"  [green]✓ DuckDB connected[/]  ·  warehouse: [dim].openforge/warehouse.db[/]")
+            connector.close()
+
+        elif ct == "trino":
+            cfg = TrinoConfig(
+                host=host, port=port, user=user,
+                catalog=catalog, schema=schema,
+                http_scheme=http_scheme, password=password,
+            )
+            connector = TrinoConnector(cfg)
+
+            with console.status(f"Connecting to Trino at [dim]{http_scheme}://{host}:{port}[/]..."):
+                ok = connector.test_connection()
+
+            console.print(f"  [green]✓ Trino connected[/]  ·  [dim]{http_scheme}://{host}:{port}[/]")
+            console.print(f"  User: [dim]{user}[/]  ·  Catalog: [dim]{catalog}[/]  ·  Schema: [dim]{schema}[/]")
+
+            # Show catalogs
+            with console.status("Listing catalogs..."):
+                catalogs = connector.list_catalogs()
+            console.print(f"\n  [bold]Catalogs:[/] {', '.join(catalogs)}")
+
+            # Show tables in configured schema
+            try:
+                with console.status(f"Listing tables in {catalog}.{schema}..."):
+                    tables = connector.list_tables()
+                if tables:
+                    t = RichTable(show_header=True, header_style="bold cyan", border_style="dim")
+                    t.add_column("Table")
+                    t.add_column("Catalog", style="dim")
+                    t.add_column("Schema", style="dim")
+                    for tbl in tables:
+                        t.add_row(tbl, catalog, schema)
+                    console.print()
+                    console.print(t)
+                else:
+                    console.print(f"\n  [dim]No tables in {catalog}.{schema}[/]")
+            except Exception:
+                pass  # Schema might be empty — not a failure
+
+            connector.close()
+
+            # Print pipeline.yaml snippet
+            console.print(f"""
+[dim]Add this to your pipeline.yaml to use Trino:[/]
+
+  [bold]connector:[/]
+    type: trino
+    host: {host}
+    port: {port}
+    user: {user}
+    catalog: {catalog}
+    schema: {schema}
+    http_scheme: {http_scheme}
+""")
+
+        else:
+            available = "duckdb, trino"
+            console.print(f"[red]✗ Unknown connector: '{ct}'.[/] Available: {available}")
+            raise typer.Exit(1)
+
+    except Exception as e:
+        console.print(f"\n  [red]✗ Connection failed:[/] {e}")
+        if ct == "trino":
+            console.print(
+                "\n  [dim]Make sure Trino is running. Quick start with Docker:\n"
+                "  docker run -d --name trino -p 8080:8080 trinodb/trino[/]"
+            )
+        raise typer.Exit(1)
+
+
+# ---------------------------------------------------------------------------
 # status
 # ---------------------------------------------------------------------------
 
