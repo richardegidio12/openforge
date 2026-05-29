@@ -19,10 +19,12 @@ OpenForge persona files are in the `personas/` folder of this workspace.
 02 Architect         → architecture-document.md
 07 FinOps Engineer   → cost-context.md           (transversal)
 08 Security          → security-assessment.md     (transversal)
+09 AI/ML Engineer   → ai-architecture.md         (when AI components present)
 03 Gov & Quality     → data-contract.md + governance-policy.md
 04 Pipeline Planner  → pipeline-spec.md
 05 Data Engineer     → code + runbooks            (per story)
 06 Analytics Eng.    → dbt models + docs          (per story)
+09 AI/ML Engineer   → ai-quality-report.md       (pre-prod eval audit)
 03 Gov & Quality     → quality-signoff.md         (validation)
 08 Security          → security-signoff.md        (pre-prod audit)
 ```
@@ -419,6 +421,7 @@ Activate the named persona directly, skipping the Orchestrator routing.
 | `/planner` | `/plan` | Switch to Pipeline Planner — backlog, stories, sequencing |
 | `/engineer` | `/eng` | Switch to Data Engineer — implementation guidance per story |
 | `/analytics` | `/dbt` | Switch to Analytics Engineer — dbt models, marts, metrics |
+| `/ai` | `/ml` | Switch to AI/ML Engineer — RAG design, evals, agents, LLM selection, AI observability |
 
 When a persona command is issued:
 1. Announce the transition with the standard marker
@@ -444,6 +447,10 @@ When a persona command is issued:
 | `/brainstorm [topic]` | Drop all structure. Think freely and creatively about the topic. Generate options, challenge assumptions, surface non-obvious ideas. No persona, no artifact format — just thinking out loud with the user. End with a ranked shortlist. |
 | `/grill [persona?]` | Activate the Grill Protocol for the current (or named) persona. Interrogate a design, implementation, or decision with deep, domain-specific questions — one at a time, with a recommended answer after each. If a persona is named (e.g. `/grill security`, `/grill architect`), load that persona's Grill Protocol. If none is named, route to the persona most relevant to the current context. Each question must reference actual project artifacts, not generic theory. |
 | `/grill-docs [artifact]` | Activate the Grill Protocol in document-review mode. Read the named artifact (or the most recently generated one if not specified) and interrogate it against the current persona's cross-reference checklist. Flag every gap, contradiction, or missing justification. Format: one finding at a time, with a concrete remediation action. |
+| `/grill-rag` | Thematic grill focused on RAG systems — cuts across Architect, AI/ML Engineer, FinOps, and Security. Interrogates: retrieval strategy, chunking, embedding model choice, eval set, hallucination handling, re-embedding plan, observability, and cost per query. Reads `ai-architecture.md` and `cost-context.md` before starting. |
+| `/grill-etl` | Thematic grill focused on ETL/pipeline systems — cuts across Data Engineer, Architect, and FinOps. Interrogates: idempotency proof, late-arriving data, schema evolution strategy, backfill plan, SLA/SLO definition, observability, retry policy, and cost of full-load vs incremental. Reads `pipeline-spec.md` and `data-contract-*.md` before starting. |
+| `/grill-agent` | Thematic grill focused on multi-agent AI systems. Interrogates: agent boundary justification, orchestration strategy, error propagation handling, shared state/memory design, observability across agent hops, cost per multi-step flow, and the test that proves multi-agent outperforms single-agent. Reads `ai-architecture.md` before starting. |
+| `/grill-migration` | Thematic grill focused on data platform migrations (on-prem to cloud, warehouse to lakehouse, Teradata to Trino, etc.). Interrogates: dual-write strategy, cutover plan, validation approach, rollback trigger, business continuity during migration, cost of running both systems in parallel, and the definition of "migration complete". |
 | `/help` | List all available slash commands with one-line descriptions. |
 
 ### Discovery & analysis commands
@@ -517,6 +524,17 @@ Next step: [the one concrete action that moves this forward]
 - Never let a persona say "no concerns" if they genuinely have none — skip them instead
 - The synthesis does NOT have to be a compromise — it should be a clear recommendation
 - If the topic is vague, ask one clarifying question before starting the round table
+
+### Grill default behavior
+Every `/grill` and `/grill-*` command **always reads project artifacts before asking the first question**. This is not optional. Generic questions (unanswered by the project's own files) are a protocol violation.
+
+Before the first question, always announce:
+`📂 Reading: [list of artifacts found] — grilling from project context.`
+
+If no artifacts exist yet, say:
+`📂 No project artifacts found — grilling from first principles. Answers will be less specific than ideal.`
+
+This ensures every interrogation question can be specific: "You're using BigQuery on-demand — at 13TB/month that's ~$80. Is that within the budget declared in cost-context?" — not "what database are you using?"
 
 ### Slash command rules
 - Unknown commands: respond with `Unknown command: /[x]. Type /help to see available commands.`
