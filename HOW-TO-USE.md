@@ -25,6 +25,49 @@ That's it. The agent diagnoses your project, routes to the right persona, asks t
 
 ---
 
+## Using with Claude Code (VS Code or terminal)
+
+Claude Code reads a `CLAUDE.md` file at the project root automatically — it becomes part of every session's instructions without any copy-pasting.
+
+**One-time setup:**
+```bash
+# Inside your project folder
+git clone https://github.com/richardegidio12/openforge.git openforge
+cp openforge/CLAUDE.md ./CLAUDE.md
+```
+
+Open Claude Code in VS Code (`⌘⇧P → "Claude Code"`) or in the terminal:
+```bash
+claude
+```
+
+Start talking:
+```
+I want to build a data pipeline that consolidates sales data from 3 sources.
+Where do I start?
+```
+
+The experience is identical to Cursor Agent Mode — same personas, same slash commands, same modes, same artifact saves. Claude Code reads and writes your project files directly.
+
+**The one difference from Cursor:** `CLAUDE.md` is a project file committed to your repository. If you update OpenForge, refresh it:
+```bash
+cp openforge/CLAUDE.md ./CLAUDE.md
+```
+
+### CLAUDE.md hierarchy (how Claude Code loads context)
+
+Claude Code reads `CLAUDE.md` files from the current directory up to the home directory — useful for multi-project setups:
+
+| File | When it loads | What to put there |
+|------|--------------|-------------------|
+| `~/.claude/CLAUDE.md` | Every session, globally | Your personal preferences, team conventions |
+| `my-project/CLAUDE.md` | When working in this project | OpenForge instructions (copy from `openforge/CLAUDE.md`) |
+| `my-project/src/CLAUDE.md` | When working inside `src/` | Component-specific context |
+
+> **Tip:** If you work on multiple data projects, put OpenForge in `~/.claude/CLAUDE.md` once — it activates for every project automatically.
+
+---
+
 ## Three modes of operation
 
 OpenForge operates in three explicit modes. You control which one you're in.

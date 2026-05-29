@@ -189,11 +189,11 @@ No setup. Works with Claude, ChatGPT, Gemini, or any LLM.
 
 ---
 
-### Option 2 — With Cursor Agent (recommended)
+### Option 2 — With Cursor Agent or Claude Code (recommended)
 
 One conversation. Multiple personas. Artifacts saved automatically. The agent reads existing files before each new phase — no copy-pasting context.
 
-**Setup (one time):**
+**Setup for Cursor (one time):**
 ```bash
 # In your project folder:
 git clone https://github.com/richardegidio12/openforge.git openforge
@@ -201,11 +201,22 @@ mkdir -p .cursor/rules
 cp openforge/.cursor/rules/openforge.mdc .cursor/rules/
 ```
 
-Open your project in Cursor Agent mode (⌘⇧I) and say:
+Open your project in Cursor Agent mode (`⌘⇧I`) and say:
 
 ```
 I want to build a [describe your project]. Guide me.
 ```
+
+**Setup for Claude Code — VS Code extension or CLI (one time):**
+```bash
+# In your project folder:
+git clone https://github.com/richardegidio12/openforge.git openforge
+cp openforge/CLAUDE.md ./CLAUDE.md
+```
+
+Open Claude Code (`⌘⇧P → "Claude Code"` or run `claude` in the terminal) and say the same thing. Same experience, same commands.
+
+> **Tip:** if you use OpenForge across multiple projects, copy `CLAUDE.md` to `~/.claude/CLAUDE.md` once — it loads automatically in every project.
 
 The agent starts as the Orchestrator, transitions through the right personas, saves every artifact, and is ready for your next question.
 
