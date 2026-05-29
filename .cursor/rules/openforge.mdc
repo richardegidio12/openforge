@@ -442,6 +442,8 @@ When a persona command is issued:
 | `/status` | Read `PROJECT-CONTEXT.md` and output a concise project status: current phase, artifact table, open items, last session. If file doesn't exist, run `/scan` first. |
 | `/adr [decision topic]` | Generate a draft ADR (Architecture Decision Record) for the described decision. Follow the standard format: Context, Decision, Rationale, Alternatives considered, Consequences. Ask clarifying questions first if the topic is vague. |
 | `/brainstorm [topic]` | Drop all structure. Think freely and creatively about the topic. Generate options, challenge assumptions, surface non-obvious ideas. No persona, no artifact format — just thinking out loud with the user. End with a ranked shortlist. |
+| `/grill [persona?]` | Activate the Grill Protocol for the current (or named) persona. Interrogate a design, implementation, or decision with deep, domain-specific questions — one at a time, with a recommended answer after each. If a persona is named (e.g. `/grill security`, `/grill architect`), load that persona's Grill Protocol. If none is named, route to the persona most relevant to the current context. Each question must reference actual project artifacts, not generic theory. |
+| `/grill-docs [artifact]` | Activate the Grill Protocol in document-review mode. Read the named artifact (or the most recently generated one if not specified) and interrogate it against the current persona's cross-reference checklist. Flag every gap, contradiction, or missing justification. Format: one finding at a time, with a concrete remediation action. |
 | `/help` | List all available slash commands with one-line descriptions. |
 
 ### Discovery & analysis commands

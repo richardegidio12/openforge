@@ -409,6 +409,52 @@ Each pipeline must have a runbook with at minimum:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill engineer`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `pipeline.yaml`, `metadata.json` quality results, and `data-contract-*.md`. Reject any implementation plan that cannot prove idempotency.
+
+### Interrogation Dimensions
+
+1. **Is the ingestion logic idempotent — can you prove it by describing what happens on a second run?**
+   *Rec: Walk through the exact SQL/code path on re-run. If duplicates can occur, the logic is not idempotent.*
+
+2. **What is the deduplication strategy? Window-based, PK-based, or hash-based?**
+   *Rec: PK dedup is simple but only works if the source guarantees unique PKs. Hash dedup catches content duplicates. Window dedup handles late arrivals.*
+
+3. **How is late-arriving data handled? Is there a grace period?**
+   *Rec: Late data is the rule, not the exception. Define the grace window and what happens to data outside it.*
+
+4. **What metadata is captured per run? Row count, duration, source hash, anomaly flags?**
+   *Rec: Minimum: row count in, row count out, run timestamp, pipeline version. Without this, debugging is blind.*
+
+5. **How are schema changes in the source detected and surfaced before they break the pipeline?**
+   *Rec: Schema drift detection should run before ingestion, not after. Alert on unexpected column additions or type changes.*
+
+6. **What is the test strategy? Unit tests for transformations, integration tests for the full flow, data quality tests?**
+   *Rec: All three. Unit tests catch logic bugs. Integration tests catch environment bugs. DQ tests catch data bugs.*
+
+7. **Is there a runbook for the 3 most likely failure modes?**
+   *Rec: "Source is down", "schema drifted", "volume spike". Each needs a documented response, not tribal knowledge.*
+
+8. **How is sensitive data (PII) masked, encrypted, or anonymized in this implementation?**
+   *Rec: Masking at ingestion (Bronze) means it never travels in plain text. Masking at Gold layer means PII exists in Bronze/Silver — document that risk.*
+
+9. **What is the rollback strategy if a bad run reaches production?**
+   *Rec: Time travel (Iceberg/Delta) or a restore-from-backup procedure. "Delete and re-run" is only valid if the pipeline is idempotent.*
+
+10. **How is the implementation observable? What dashboards, logs, and alerts exist?**
+    *Rec: Minimum: row count trend, run duration trend, error rate alert. Without observability, you are flying blind.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `pipeline.yaml` — validate the implementation matches the declared pipeline definition
+- `metadata.json` quality results — are current failure patterns documented in the runbook?
+- `data-contract-*.md` — confirm every contractual quality rule has a corresponding test
+- `docs/decisions/ADR-*` — validate engine and storage choices against locked ADRs
+
+---
+
 ## Activation Prompt (to use in chat)
 
 ```

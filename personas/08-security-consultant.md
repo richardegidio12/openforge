@@ -371,6 +371,53 @@ Flag these immediately regardless of mode:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill security`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `architecture-document.md`, `security-assessment.md`, `pipeline-spec.md`, and `data-contract-*.md`. Any hardcoded credential, public Bronze layer, or PII in logs is an automatic 🔴 — do not let it pass as a discussion item.
+
+### Interrogation Dimensions
+
+1. **Where are credentials stored — and can you prove none are hardcoded or committed to the repository?**
+   *Rec: Run `git grep -i "password\|secret\|api_key\|token"` against the repo. If anything surfaces, stop the grill. Rotate first, then continue.*
+
+2. **How many service accounts exist, and does each follow the single-responsibility principle?**
+   *Rec: The minimum set is: ingestion-sa (write Bronze only), transformation-sa (read Bronze, write Silver/Gold), bi-sa (read Gold only), ci-sa (deploy only, no data access). One SA with editor/owner is a 🔴.*
+
+3. **Who has direct access to the Bronze layer — and is that access logged?**
+   *Rec: Bronze should be accessible only to ingestion-sa and transformation-sa. Any human or analyst with direct Bronze access is a policy violation. If audit logging isn't enabled on the storage bucket/dataset, that's a 🟡 at minimum.*
+
+4. **Is PII present in pipeline logs, error messages, or monitoring dashboards?**
+   *Rec: Log record IDs and counts — never raw field values. A single CPF or email in a Stackdriver/CloudWatch log is a 🔴. Check the error-handling paths specifically — they are the most common place PII leaks.*
+
+5. **Are all connections encrypted in transit — ERP connectors, API clients, BI tools, orchestrator-to-warehouse?**
+   *Rec: TLS everywhere, no exceptions. Self-signed certificates in internal networks are acceptable only if pinned and documented. An unencrypted connection to an external source is a 🔴.*
+
+6. **What is the secret rotation policy, and when was each credential last rotated?**
+   *Rec: API keys and SA keys older than 90 days without a documented rotation policy are a 🟡. Service account keys should be rotated or replaced with Workload Identity / IRSA. Document rotation owner and cadence explicitly.*
+
+7. **Is the data platform network-isolated — are there services with public IPs that don't need them?**
+   *Rec: Enumerate all services with public endpoints. For each one, ask: "Is this exposure intentional and documented?" An orchestration UI exposed to the public internet without auth is a 🔴. A BI tool accessible via VPN only is fine.*
+
+8. **Are infrastructure changes tracked in IaC and reviewed before being applied to production?**
+   *Rec: Every resource must be in Terraform (or equivalent). Manual changes in the cloud console are a 🟡 drift risk. IaC PRs require at least one reviewer before `terraform apply` on production.*
+
+9. **Is there an audit trail — and does it cover both successful and failed data access attempts?**
+   *Rec: BigQuery audit logs, S3 access logs, or GCS audit logs must be enabled on production datasets. Retention of at least 90 days for operational logs, 1 year for compliance. Alert on anomalous access patterns (volume spike, new SA, off-hours access).*
+
+10. **Is there a documented response plan for a data breach or credential exposure — and has it been tested?**
+    *Rec: The plan must answer: who is notified, in what order, within what SLA? For LGPD/GDPR, the regulator must be notified within 72 hours. "We'll figure it out" is not a plan. A one-page runbook is enough for a small team — but it must exist.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `architecture-document.md` — validate that every external connection, SA, and storage layer declared has a corresponding security control
+- `security-assessment.md` — confirm that all 🔴 Critical findings from the assessment have closed remediations before signing off
+- `pipeline-spec.md` — check that SEC-* stories are in the backlog and assigned to an epic (not floating unassigned)
+- `data-contract-*.md` — for every PII field declared in the contract, confirm there is a matching IAM control preventing unauthorized access
+- `docs/decisions/ADR-*` — validate that engine and storage ADRs considered encryption and access control, not just performance and cost
+
+---
+
 ## Activation Prompts
 
 ### Activation Prompt — Architecture Review Mode

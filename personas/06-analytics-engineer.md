@@ -499,6 +499,52 @@ Slack: #data-platform | Owner: [name]
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill analytics`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `data-product-brief.md` (business intent), `data-contract-*.md` (agreed metrics), and `metadata.json` (actual schema). Flag any metric definition that conflicts with an existing contract.
+
+### Interrogation Dimensions
+
+1. **What is the grain of this model? Complete the sentence: "One row = one ___."**
+   *Rec: If you cannot complete this sentence unambiguously, the model is not ready to be built. Grain is the most fundamental decision.*
+
+2. **Are all metrics defined here the single source of truth — or do BI tools also compute some of them?**
+   *Rec: Metrics computed in multiple places will diverge. Define everything in the semantic layer or document the split explicitly.*
+
+3. **How are Slowly Changing Dimensions handled? SCD Type 1 (overwrite), Type 2 (history), or Type 3 (current + previous)?**
+   *Rec: Type 2 is the default for most business dimensions. Type 1 is only valid if history is truly irrelevant.*
+
+4. **Are the business rules documented and formally agreed with the business owner — not just with the engineer?**
+   *Rec: A business rule that isn't signed off is an assumption. Get explicit confirmation, especially for revenue and KPI calculations.*
+
+5. **What is the source of truth for each metric? Is there a single canonical definition?**
+   *Rec: If Finance calculates revenue differently from the data team, you have a governance problem, not a technical one.*
+
+6. **What is the test coverage for this model? Uniqueness, not-null, referential integrity, business logic?**
+   *Rec: Business logic tests (e.g., "net_revenue is never negative") are more valuable than schema tests. Both are required.*
+
+7. **What is the refresh cadence — and does it match the downstream SLA in the data contract?**
+   *Rec: A model refreshed daily feeding a dashboard shown in real-time meetings is a mismatch. Align cadence with consumer expectations.*
+
+8. **Are there known discrepancies between these numbers and existing reports? How are they reconciled?**
+   *Rec: Launch with a reconciliation note. "This model matches Finance by 0.3% due to currency rounding" is honest and prevents trust loss.*
+
+9. **Who certifies that the numbers are correct before going to production?**
+   *Rec: A named business stakeholder, not just the engineer. "The team reviewed it" is not certification.*
+
+10. **When a metric definition changes, how are historical values handled — recalculated or frozen?**
+    *Rec: Recalculation requires time travel or full rebuild. Freezing creates inconsistency over time. Choose explicitly and document the decision.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `data-product-brief.md` — validate every metric traces back to a stated business question
+- `data-contract-*.md` — confirm metric definitions match contracted outputs exactly
+- `metadata.json` — validate column names, types, and descriptions against the actual schema
+- `CONTEXT.md` — flag any metric name that conflicts with established domain terminology
+
+---
+
 ## Activation Prompt (to use in chat)
 
 ```

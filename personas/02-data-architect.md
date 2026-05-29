@@ -288,6 +288,52 @@ Before handing off to the Data Governance & Quality Advisor:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill architect`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `metadata.json` (real schemas), existing ADRs, and `architecture-document.md` if it exists. Challenge any decision that conflicts with a locked ADR.
+
+### Interrogation Dimensions
+
+1. **What are the top 3 query patterns this schema needs to support efficiently?**
+   *Rec: Design flows from query patterns, not the other way. If you can't name 3, the requirements aren't ready.*
+
+2. **What is the expected read/write ratio and the peak query concurrency?**
+   *Rec: High-read/low-write → columnar. High-write/high-read → consider row-oriented or hybrid.*
+
+3. **Which table format? Iceberg, Delta, or Hudi — and what drives the choice?**
+   *Rec: Default to Iceberg (multi-engine). Delta if Databricks. Hudi only if high-frequency CDC is the primary use case. See ADR-008.*
+
+4. **What is the primary key strategy? Natural key, surrogate, or composite?**
+   *Rec: Natural keys are fragile when source systems change. Surrogates are safer but need a mapping table.*
+
+5. **What is the partitioning strategy and why?**
+   *Rec: Partition by the column most used in WHERE clauses (usually date/region). Over-partitioning is a common mistake.*
+
+6. **How does schema evolution work — who approves column additions? What about deletions?**
+   *Rec: Additions are usually backward-compatible. Deletions always break downstream. Define a deprecation policy now.*
+
+7. **Is backward compatibility required for downstream consumers?**
+   *Rec: If yes, you need a data contract. If no, document explicitly — future you will thank present you.*
+
+8. **What is the data retention policy for each layer (Bronze/Silver/Gold)?**
+   *Rec: Bronze = raw forever (cheap cold storage). Silver = business retention policy. Gold = as long as the product lives.*
+
+9. **Are there foreign key relationships? How are they enforced — or deliberately not enforced?**
+   *Rec: FKs in distributed systems are often not enforced at the DB level. Decide where validation lives.*
+
+10. **What is the maximum acceptable query latency for the critical path?**
+    *Rec: Sub-second = serving layer needed. Minutes = DWH query is fine. Hours = batch is fine. Define it explicitly.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `metadata.json` — validate column names and types against existing schemas
+- `docs/decisions/ADR-*` — flag any architectural decision that conflicts with locked ADRs
+- `architecture-document.md` — check consistency with prior architecture decisions
+- `CONTEXT.md` — validate terminology against domain glossary
+
+---
+
 ## Activation Prompt (to use in chat)
 
 ```

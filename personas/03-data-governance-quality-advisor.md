@@ -377,6 +377,52 @@ Go through the `data-contract-[name].md` item by item and validate each point wi
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill governance`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `data-contract-*.md`, quality results in `metadata.json`, and existing governance policies. Flag any PII column without a documented handling strategy.
+
+### Interrogation Dimensions
+
+1. **Which columns contain PII? Is the inventory complete and validated by a legal or compliance stakeholder?**
+   *Rec: PII inventory must be signed off. "Probably just name and email" is not an inventory.*
+
+2. **What is the legal basis for processing this data? (LGPD Art. 7 / GDPR Art. 6)**
+   *Rec: Consent, legitimate interest, or contractual necessity — each has different requirements. Don't assume.*
+
+3. **What is the data retention policy and is it enforced technically — not just in policy docs?**
+   *Rec: A policy that isn't enforced by code will eventually be violated. Define the TTL and implement it.*
+
+4. **Who is the data owner? A named person, not a team.**
+   *Rec: Teams rotate. A named person is accountable. The owner approves schema changes and data contract modifications.*
+
+5. **What is the SLA for data quality? Define it numerically.**
+   *Rec: "Good quality" is not an SLA. "< 0.1% nulls on order_id, 0 duplicates on transaction_id" is.*
+
+6. **Is there a signed data contract? Who are the producer and consumer signatories?**
+   *Rec: An unsigned contract is a suggestion. Both parties need to commit to the schema and SLAs.*
+
+7. **What happens operationally when a quality check fails in production?**
+   *Rec: Alert → who? Block pipeline → which downstream? Auto-quarantine → where? Define the runbook.*
+
+8. **Which regulatory frameworks apply? (LGPD, GDPR, HIPAA, SOX, PCI-DSS)**
+   *Rec: Each adds specific requirements. LGPD requires a DPA. SOX requires audit trails. Identify early.*
+
+9. **Is access controlled at the column level for sensitive fields, or only at the table level?**
+   *Rec: Table-level access is usually too coarse for PII. Column masking or row-level security is the minimum for production.*
+
+10. **Is there a data lineage requirement for audit purposes — can you trace a value back to its source?**
+    *Rec: Regulatory audits often require full lineage. If yes, every transformation must be logged.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `data-contract-*.md` — validate all quality rules are captured in the contract
+- `metadata.json` quality results — are current failure rates within the contracted SLA?
+- `governance-policy.md` — check consistency with existing policies
+- `CONTEXT.md` — validate PII and sensitivity terminology
+
+---
+
 ## Activation Prompt — Contract Mode
 
 ```

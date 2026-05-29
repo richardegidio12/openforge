@@ -175,6 +175,51 @@ Before handing off to the Data Architect, verify:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill strategist`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `CONTEXT.md` (domain glossary), `data-product-brief.md` if it exists, and challenge any term that conflicts with the project's established vocabulary.
+
+### Interrogation Dimensions
+
+1. **What specific business decision will this data product enable?**
+   *Rec: Name the exact decision, the person who makes it, and the frequency. "We need analytics" is not an answer.*
+
+2. **Who is the primary consumer and what is their current workaround without this data?**
+   *Rec: If there's no workaround, the pain may not be real. A workaround proves genuine need.*
+
+3. **What is the cost of a wrong answer from this data product?**
+   *Rec: Quantify — a wrong churn prediction that triggers a $50k campaign is very different from a wrong internal report.*
+
+4. **How will success be measured 90 days after delivery?**
+   *Rec: Define a concrete metric: adoption rate, decision speed, cost reduction. "Stakeholders are happy" doesn't count.*
+
+5. **What is explicitly out of scope — and who agreed to that?**
+   *Rec: Out-of-scope should be a signed-off list, not just your assumption.*
+
+6. **Who owns this data product after it ships? Is it a team or a named person?**
+   *Rec: A product without a named owner will degrade. Get a name.*
+
+7. **What happens if the data is stale by 24 hours? By 1 week?**
+   *Rec: This defines the SLA. If stale data is harmless, freshness requirements relax significantly.*
+
+8. **What is the Minimum Viable version that proves real value — before building the full product?**
+   *Rec: An MVP should be completable in one sprint. If not, the scope is too large.*
+
+9. **Is there a sunset date, or is this expected to be maintained indefinitely?**
+   *Rec: Indefinite maintenance needs an owner, monitoring, and an ops budget. Plan for it now.*
+
+10. **Which single stakeholder has the authority to say "stop, this is wrong"?**
+    *Rec: Multiple veto holders = deadlock. Identify the single decision-maker upfront.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `CONTEXT.md` — challenge any term that conflicts with the domain glossary
+- `data-product-brief.md` — if it exists, validate consistency with prior decisions
+- `PROJECT-CONTEXT.md` — check Decision Anchors for team size and budget constraints
+
+---
+
 ## Activation Prompt (to use in chat)
 
 To start the Data Product Strategist in a chat session, use:

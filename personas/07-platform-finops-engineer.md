@@ -316,6 +316,52 @@ When the cost-context exists, other personas should consult it:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill finops`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `cost-context.md`, `architecture-document.md`, and ADRs for engine and storage choices. Flag any architectural decision with significant cost implications that wasn't evaluated against the budget ceiling.
+
+### Interrogation Dimensions
+
+1. **What is the estimated monthly cost of this workload — compute, storage, and network separately?**
+   *Rec: Break it down. Surprises in cloud bills almost always come from one of three places: unexpected scans, data transfer, or idle compute.*
+
+2. **What is the budget ceiling? Is it documented in `cost-context.md` and agreed with the business owner?**
+   *Rec: An undocumented budget ceiling becomes a negotiation after the bill arrives. Lock it before building.*
+
+3. **What compute tier is being used — and is it justified by the workload profile?**
+   *Rec: Serverless for bursty workloads. Reserved instances for steady-state. Never on-demand for predictable 24/7 loads.*
+
+4. **Is the workload bursty or steady-state? What is the p95 compute requirement?**
+   *Rec: A pipeline that spikes once a day to 10x average consumption should use autoscaling, not a fixed cluster sized for peak.*
+
+5. **What is the cost per row processed — and is it within acceptable range for this dataset's growth projection?**
+   *Rec: If cost per row doesn't decrease as volume grows, the architecture doesn't scale economically.*
+
+6. **Are there idle resources being paid for? Clusters left running, tables never queried, storage never accessed?**
+   *Rec: Run a query against billing data: identify resources with zero usage in the last 30 days.*
+
+7. **Is there a cheaper engine for this workload that hasn't been evaluated?**
+   *Rec: DuckDB instead of Spark for < 100GB. Athena instead of Redshift for ad-hoc queries. Evaluate before committing.*
+
+8. **What is the storage tier strategy? Hot, warm, or cold — and does it match access frequency?**
+   *Rec: Data accessed daily = hot. Weekly = warm. Archived = cold. Storing everything in hot storage is the most common waste.*
+
+9. **Is there a cost alerting threshold configured — and does it trigger before the budget is breached, not after?**
+   *Rec: Alert at 70% and 90% of budget. An alert at 100% is a notification of failure, not a prevention.*
+
+10. **What optimizations have already been evaluated and ruled out — and why?**
+    *Rec: Document rejected optimizations to prevent re-evaluating the same options in 6 months. "We tried partition pruning — it reduced cost by only 3%, not worth the complexity."*
+
+### Cross-reference (grill-with-data-docs mode)
+- `cost-context.md` — validate estimates against the declared budget ceiling and unit cost targets
+- `architecture-document.md` — flag any engine choice with known cost implications
+- `docs/decisions/ADR-*` — check if cost was evaluated in engine and storage ADRs
+- `PROJECT-CONTEXT.md` — validate against the budget Decision Anchor
+
+---
+
 ## Activation Prompt — Context Mode
 
 ```

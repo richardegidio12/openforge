@@ -439,6 +439,52 @@ Before handing off to the build team:
 
 ---
 
+## Grill Protocol
+
+> Activated by `/grill` or `/grill pipeline`.
+> Ask questions **one at a time**. Include your recommended answer after each question.
+> Cross-reference `pipeline.yaml` files in the project, `metadata.json` schemas, and `architecture-document.md`. Flag any plan that duplicates an existing pipeline or contradicts the locked orchestration ADR.
+
+### Interrogation Dimensions
+
+1. **What is the source system? Database, API, file drop, event stream, or SaaS platform?**
+   *Rec: The source system determines everything else. A Kafka stream and an S3 file have completely different ingestion patterns.*
+
+2. **What is the ingestion pattern? Full load, incremental (watermark), CDC, or streaming?**
+   *Rec: Full load is simple but expensive at scale. CDC is efficient but complex. Incremental is the middle ground. Choose based on volume and latency.*
+
+3. **What is the current volume and what is the expected volume in 12 months?**
+   *Rec: A pipeline that works for 1GB today will fail at 1TB. Design for the 12-month projection, not today's reality.*
+
+4. **What is the SLA for data freshness? Minutes, hours, or daily?**
+   *Rec: Sub-hour SLA = streaming or micro-batch. Hours = standard batch. Daily = overnight job. The SLA drives the entire architecture.*
+
+5. **Is the pipeline idempotent — what happens if it runs twice for the same period?**
+   *Rec: All pipelines must be idempotent. If re-running creates duplicates, you have a time bomb in production.*
+
+6. **What is the failure mode? Retry, dead-letter queue, or manual intervention?**
+   *Rec: Define retries (how many, with what backoff), alert thresholds, and who is notified. "It shouldn't fail" is not a strategy.*
+
+7. **Are there upstream dependencies on other pipelines? What's the DAG?**
+   *Rec: Undocumented dependencies become outages. Map every upstream dependency before writing a single line.*
+
+8. **What is the backfill strategy for historical data?**
+   *Rec: Can the source replay history? Is there an archive? How far back? A pipeline without a backfill story is incomplete.*
+
+9. **What is the transformation complexity? Simple copy, aggregation, multi-table join, or ML feature?**
+   *Rec: Complexity determines the engine. DuckDB for simple-medium. Spark/Flink for large-scale or streaming.*
+
+10. **Who is notified when this pipeline fails at 3am on a Sunday?**
+    *Rec: If the answer is "nobody", the pipeline is not production-ready. Define on-call ownership now.*
+
+### Cross-reference (grill-with-data-docs mode)
+- `pipeline.yaml` files — is this pipeline already defined? Would it duplicate an existing one?
+- `metadata.json` — do the source schema column names match what's expected?
+- `architecture-document.md` — validate orchestration and engine choices against locked ADRs
+- `pipeline-spec.md` — check for story dependencies and sequencing conflicts
+
+---
+
 ## Activation Prompt (to use in chat)
 
 ```
