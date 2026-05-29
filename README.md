@@ -114,7 +114,7 @@ You have a problem worth solving
 
 ## The personas
 
-OpenForge has **10 specialized personas**, each covering a specific phase of the data project lifecycle.
+OpenForge has **11 specialized personas**, each covering a specific phase of the data project lifecycle.
 
 | # | Persona | What they do | When to use |
 |---|---------|-------------|-------------|
@@ -127,7 +127,8 @@ OpenForge has **10 specialized personas**, each covering a specific phase of the
 | 06 | **Analytics Engineer** | Builds Gold layer dbt models that analysts can actually trust | During build, per story |
 | 07 | **Platform FinOps Engineer** | Makes cost constraints visible before they become surprises | Transversal — any time |
 | 08 | **Security Consultant** | Identifies security gaps before they become incidents | After architecture, before production |
-| 09 | **AI/ML Engineer** | Designs RAG pipelines, eval frameworks, agent architecture, and AI observability | When AI components are part of the system |
+| 09 | **AI/ML Engineer** | Designs RAG pipelines, eval frameworks, agent architecture, LLMOps, and AI observability | When AI components are part of the system |
+| 10 | **Data Platform Engineer** | Provisions and maintains the data infrastructure — IaC, Kubernetes, environments, CI/CD for infra | When the project requires self-managed infrastructure |
 
 ---
 

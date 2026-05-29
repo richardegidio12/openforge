@@ -62,6 +62,7 @@ Based on existing artifacts, ask **at most 3 additional questions** to understan
 - "What's the team size that will work on this? (e.g. just me, 2–3 people, a data squad)"
 - "What's the timeline or urgency? (e.g. quick POC, 2-month project, no deadline)"
 - "Is there a defined monthly infrastructure budget? (e.g. up to $500/month, no limit, don't know yet)" ← feeds the Platform FinOps Engineer
+- "Does this project require provisioning infrastructure — Kubernetes, Terraform, cloud environments — or will it use fully managed services like BigQuery, dbt Cloud, Dagster Cloud?" ← determines if Persona 10 (Data Platform Engineer) is needed
 
 **If some artifacts exist (project in progress):**
 - "What's been done so far? Is everything approved or is something under review?"
@@ -103,6 +104,18 @@ OPENFORGE ROUTING TREE
         YES → → INVOKE: 08 - Security Consultant (Architecture Review Mode)
         NO (internal only, no PII, POC) → skip or defer → continue ↓
       YES → continue ↓
+
+    YES → Does the project require self-managed infrastructure (Kubernetes, Terraform, VMs)?
+      YES → Has infra-spec.md?
+        NO → → INVOKE: 10 - Data Platform Engineer (Bootstrap Mode)
+        YES → continue ↓
+      NO (fully managed services only) → skip → continue ↓
+
+    YES → Does the project include AI/ML components (RAG, LLMs, agents, embeddings)?
+      YES → Has ai-architecture.md?
+        NO → → INVOKE: 09 - AI/ML Engineer (Architecture Review Mode)
+        YES → continue ↓
+      NO → skip → continue ↓
 
     YES → Has data-contract + governance-policy?
       NO → Is it an internal project with no external consumers?

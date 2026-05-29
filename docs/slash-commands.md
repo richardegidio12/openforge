@@ -45,7 +45,8 @@ Switch to a specific persona without going through the Orchestrator.
 | `/planner` | | Backlog, stories, epics, sequencing |
 | `/engineer` | `/eng` | Implementation guidance per story, code, runbooks |
 | `/analytics` | `/dbt` | dbt models, marts, metrics layer |
-| `/ai` | `/ml` | AI/ML Engineer — RAG design, evals, agent architecture, LLM selection, AI observability |
+| `/ai` | `/ml` | AI/ML Engineer — RAG design, evals, agent architecture, LLM selection, LLMOps, AI observability |
+| `/platform` | `/infra` | Data Platform Engineer — IaC (Terraform/Pulumi), Kubernetes for data, environment management, migration planning |
 
 **Examples:**
 ```
@@ -154,6 +155,7 @@ Cut across multiple personas — interrogate a concern, not a role.
 | `/grill-rag` | RAG systems: retrieval strategy, chunking, embeddings, eval, hallucination, cost |
 | `/grill-etl` | ETL pipelines: idempotency, late data, schema evolution, backfill, SLA, retry |
 | `/grill-agent` | Multi-agent AI: boundary justification, orchestration, error propagation, cost |
+| `/grill-infra` | Infrastructure provisioning: IaC state, environment isolation, compute sizing, CI/CD, drift, DR |
 | `/grill-migration` | Platform migrations: dual-write, cutover, validation, rollback, parallel cost |
 
 ### Document review mode
@@ -205,6 +207,7 @@ Cut across multiple personas — interrogate a concern, not a role.
 /grill-rag                  RAG system interrogation (cross-persona)
 /grill-etl                  ETL pipeline interrogation (cross-persona)
 /grill-agent                Multi-agent AI interrogation
+/grill-infra                Infrastructure provisioning interrogation
 /grill-migration            Platform migration interrogation
 
 ── WORKFLOWS ─────────────────────────────────────────────
