@@ -114,7 +114,7 @@ You have a problem worth solving
 
 ## The personas
 
-OpenForge has **9 specialized personas**, each covering a specific phase of the data project lifecycle.
+OpenForge has **10 specialized personas**, each covering a specific phase of the data project lifecycle.
 
 | # | Persona | What they do | When to use |
 |---|---------|-------------|-------------|
@@ -127,6 +127,7 @@ OpenForge has **9 specialized personas**, each covering a specific phase of the 
 | 06 | **Analytics Engineer** | Builds Gold layer dbt models that analysts can actually trust | During build, per story |
 | 07 | **Platform FinOps Engineer** | Makes cost constraints visible before they become surprises | Transversal — any time |
 | 08 | **Security Consultant** | Identifies security gaps before they become incidents | After architecture, before production |
+| 09 | **AI/ML Engineer** | Designs RAG pipelines, eval frameworks, agent architecture, and AI observability | When AI components are part of the system |
 
 ---
 
@@ -211,13 +212,31 @@ The agent starts as the Orchestrator, transitions through the right personas, sa
 At any point in the conversation, use **slash commands** to call a specific persona or mode directly:
 
 ```
+── OPERATING MODES ───────────────────────────────────────
+/ask              → 🔵 read-only reasoning — no files changed
+/plan             → 🟡 generate + preview, wait for approval (default)
+/agent            → 🟢 execute autonomously, save directly
+/refine           → structured demand interview before any work starts
+
+── PERSONAS ──────────────────────────────────────────────
 /architect        → switch to Data Architect
+/ai  /ml          → switch to AI/ML Engineer (RAG, evals, agents)
 /change           → trigger CHANGE MODE (impact analysis)
-/brainstorm       → free exploration, no structure
-/risk             → identify risks in the current topic
-/status           → show project state from PROJECT-CONTEXT.md
-/party-mode       → round table: all personas discuss the same topic,
+
+── GRILL PROTOCOLS ───────────────────────────────────────
+/grill            → deep interrogation of current context
+/grill architect  → architecture-specific interrogation
+/grill security   → security-specific interrogation
+/grill-rag        → RAG system interrogation (cross-persona)
+/grill-etl        → ETL pipeline interrogation (cross-persona)
+
+── ROUND TABLE ───────────────────────────────────────────
+/party-mode       → all personas discuss the same topic,
                     each from their domain, ending with a synthesis
+
+── STATUS ────────────────────────────────────────────────
+/status           → project state + active blockers
+/tasks            → task board (in-progress, blocked, resolved)
 ```
 
 **Full guide:** [`docs/cursor-agent-mode.md`](docs/cursor-agent-mode.md) · **Slash commands:** [`docs/slash-commands.md`](docs/slash-commands.md)

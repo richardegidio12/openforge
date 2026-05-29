@@ -9,10 +9,10 @@
 
 | Field | Value |
 |-------|-------|
-| Phase | MVP Spike (Phase 1 of 5) |
-| Status | 🟡 In progress — core agents implemented, needs install + smoke test |
+| Phase | Method evolution — post-MVP |
+| Status | 🟢 Stable — platform built, method significantly expanded this session |
 | Last session | 2026-05-28 |
-| Next action | `pip install -e .` → `openforge init` → `openforge run` |
+| Next action | Push to origin → review docs → plan next evolution |
 
 ---
 
@@ -76,11 +76,9 @@
 
 ## Open Items
 
-- [ ] Smoke test: `pip install -e . && openforge init && openforge run`
-- [ ] `.gitignore` entry for `.openforge/warehouse.db`
-- [ ] Tests: `tests/test_schema_agent.py`, `tests/test_quality_agent.py`
 - [ ] Logo: Richard hasn't chosen between 3 concepts yet
-- [ ] Phase 2 planning: `openforge chat` conversational interface
+- [ ] Tests: `tests/test_schema_agent.py`, `tests/test_quality_agent.py`
+- [ ] `templates/CONTEXT.md` — review and validate with real project
 
 ---
 
@@ -88,5 +86,7 @@
 
 | Session | Work done |
 |---------|-----------|
-| 2026-05-28 | Defined 5-phase platform roadmap. Chose Option B (MVP spike). Implemented Steps 1–10: pyproject.toml, all agents, pipeline runner, CLI, sample data, ADRs 007–011 |
-| Prior | Published to GitHub, SSH key setup, English translation, slash commands, determinism protocol, SDD discovery |
+| 2026-05-28 (3) | Persona 09 AI/ML Engineer (RAG, evals, agents, AI observability). Thematic grills: /grill-rag, /grill-etl, /grill-agent, /grill-migration. Explicit Ask/Plan/Agent modes. Checkpoint Protocol. Escalation Policy. Parallel Track Protocol. Task Board. /refine command. templates/tasks.md. templates/CONTEXT.md. |
+| 2026-05-28 (2) | Per-persona Grill Protocol added to all 8 personas (10 questions + cross-reference each). /grill and /grill-docs slash commands. ADR-013 documenting the decision. |
+| 2026-05-28 (1) | Defined 5-phase platform roadmap. MVP spike: pyproject.toml, all agents, pipeline runner, CLI, connectors (DuckDB + Trino), SDK, Web UI, chat, heal, inspect. ADRs 007–012. Phase 5: SDK + Plugin API + Web dashboard. |
+| Prior | Published to GitHub, SSH key setup, English translation, slash commands, determinism protocol, SDD discovery, brownfield mode, consulting mode. |

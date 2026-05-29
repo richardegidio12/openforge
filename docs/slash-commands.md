@@ -6,6 +6,30 @@ Type a command at the start of your message. It takes effect immediately — no 
 
 ---
 
+## Operating mode commands
+
+OpenForge operates in one of three explicit modes. Modes persist until changed.
+
+| Command | Marker | What it does |
+|---------|--------|-------------|
+| `/ask [question?]` | 🔵 ASK MODE | Read-only reasoning — analyzes, explains, reviews. Nothing created or saved. Stays active until `/plan` or `/agent` is called. |
+| `/plan [task?]` | 🟡 PLAN MODE | Generates artifacts as previews in the conversation. Waits for explicit approval before saving to disk. **Default at session start.** |
+| `/agent [task?]` | 🟢 AGENT MODE | Executes autonomously — generates, saves, iterates. Pauses only for 🔴 Critical decisions (security breach, budget exceeded, scope change). |
+| `/refine [demand?]` | 🟡 PLAN MODE | Structured demand interview before any work starts. Orchestrator asks up to 5 focused questions (one at a time) to clarify problem, success criteria, constraints, and risks. Outputs a demand brief that feeds Phase 1. |
+
+**Examples:**
+```
+/ask  Does our current architecture support 10x volume?
+
+/plan Let's design the Silver transformation for the orders table
+
+/agent Run the full pipeline spec phase for this project
+
+/refine We need to centralise customer data from 3 different CRMs
+```
+
+---
+
 ## Persona commands
 
 Switch to a specific persona without going through the Orchestrator.
@@ -18,9 +42,10 @@ Switch to a specific persona without going through the Orchestrator.
 | `/finops` | | Cost context, budget review, cost guardrails |
 | `/security` | `/sec` | Security assessment, audit, access review |
 | `/gov` | `/governance` | Data contracts, governance policy, quality signoff |
-| `/planner` | `/plan` | Backlog, stories, epics, sequencing |
+| `/planner` | | Backlog, stories, epics, sequencing |
 | `/engineer` | `/eng` | Implementation guidance per story, code, runbooks |
 | `/analytics` | `/dbt` | dbt models, marts, metrics layer |
+| `/ai` | `/ml` | AI/ML Engineer — RAG design, evals, agent architecture, LLM selection, AI observability |
 
 **Examples:**
 ```
@@ -35,7 +60,7 @@ Switch to a specific persona without going through the Orchestrator.
 
 ---
 
-## Mode commands
+## Workflow commands
 
 | Command | What it does |
 |---------|-------------|
@@ -59,7 +84,8 @@ Switch to a specific persona without going through the Orchestrator.
 | Command | What it does |
 |---------|-------------|
 | `/scan` | Scans the project for existing SDD artifacts (ADRs, specs, architecture docs, BMAD artifacts). Produces a Discovery Report: what's covered, what's missing, locked decisions, and suggested entry point. Run this first on any existing project. |
-| `/status` | Reads PROJECT-CONTEXT.md and shows current phase, artifact statuses, open items, last session. |
+| `/status` | Reads `PROJECT-CONTEXT.md` and `.openforge/tasks.md` — shows current mode, phase, artifact statuses, active blockers, and open items. |
+| `/tasks` | Reads `.openforge/tasks.md` and displays the task board: in-progress, blocked, resolved this session, and queued. Creates the file from the template if it doesn't exist yet. |
 | `/adr [decision]` | Drafts an Architecture Decision Record for the described decision. Asks clarifying questions if needed. |
 | `/brainstorm [topic]` | Free, unstructured exploration of a topic. No artifact format, no persona — just thinking. Ends with a ranked shortlist. |
 | `/help` | Lists all available commands. |
@@ -100,31 +126,99 @@ Switch to a specific persona without going through the Orchestrator.
 
 ---
 
+## Grill commands
+
+Deep interrogation protocols — one question at a time, with a recommended answer after each. Every grill reads project artifacts before asking the first question. Generic questions are a protocol violation.
+
+### Per-persona grills
+
+| Command | What it interrogates |
+|---------|---------------------|
+| `/grill` | Current persona's domain — routes automatically to the most relevant expert |
+| `/grill strategist` | Problem definition, success metrics, stakeholder alignment |
+| `/grill architect` | Engine choices, data model grain, ADR completeness |
+| `/grill security` | Credential storage, SA hygiene, PII in logs, network isolation |
+| `/grill finops` | Cost estimates, budget ceiling, idle resource detection |
+| `/grill engineer` | Idempotency, deduplication, schema drift, observability |
+| `/grill analytics` | Grain definition, metric consistency, incremental logic |
+| `/grill gov` | PII classification, contract completeness, quality rules |
+| `/grill planner` | Story granularity, dependency mapping, acceptance criteria |
+| `/grill ai` | Eval set, retrieval strategy, hallucination handling, re-embedding plan |
+
+### Thematic grills (cross-persona)
+
+Cut across multiple personas — interrogate a concern, not a role.
+
+| Command | Interrogates |
+|---------|-------------|
+| `/grill-rag` | RAG systems: retrieval strategy, chunking, embeddings, eval, hallucination, cost |
+| `/grill-etl` | ETL pipelines: idempotency, late data, schema evolution, backfill, SLA, retry |
+| `/grill-agent` | Multi-agent AI: boundary justification, orchestration, error propagation, cost |
+| `/grill-migration` | Platform migrations: dual-write, cutover, validation, rollback, parallel cost |
+
+### Document review mode
+
+| Command | What it does |
+|---------|-------------|
+| `/grill-docs [artifact]` | Reads the named artifact and interrogates it against the current persona's cross-reference checklist. Surfaces gaps, missing justifications, and contradictions — one finding at a time with a concrete remediation action. |
+
+**Examples:**
+```
+/grill-docs architecture-document.md
+
+/grill-rag
+
+/grill security
+
+/grill architect ADR-003 feels thin — interrogate it
+```
+
+---
+
 ## Quick cheat sheet
 
 ```
+── OPERATING MODES ───────────────────────────────────────
+/ask   [question?]          🔵 Read-only reasoning, no files touched
+/plan  [task?]              🟡 Generate preview, wait for approval (default)
+/agent [task?]              🟢 Execute autonomously, save directly
+/refine [demand?]           Structured demand interview before any work
+
 ── PERSONAS ──────────────────────────────────────────────
-/orchestrator  /orch       Routing & mission planning
-/strategist    /strat      Business problem & brief
-/architect     /arch       Technical design & ADRs
-/finops                    Cost & budget
-/security      /sec        Security & access
-/gov           /governance Contracts & governance
-/planner       /plan       Backlog & stories
-/engineer      /eng        Implementation (per story)
-/analytics     /dbt        dbt, marts, metrics
+/orchestrator  /orch        Routing & mission planning
+/strategist    /strat       Business problem & brief
+/architect     /arch        Technical design & ADRs
+/finops                     Cost & budget
+/security      /sec         Security & access
+/gov           /governance  Contracts & governance
+/planner                    Backlog & stories
+/engineer      /eng         Implementation (per story)
+/analytics     /dbt         dbt, marts, metrics
+/ai            /ml          RAG, evals, agents, AI observability
 
 ── ROUND TABLE ───────────────────────────────────────────
 /party-mode [topic]         All personas discuss — synthesis at the end
 
-── MODES ─────────────────────────────────────────────────
+── GRILL PROTOCOLS ───────────────────────────────────────
+/grill [persona?]           Domain-specific interrogation (one Q at a time)
+/grill-docs [artifact]      Document cross-reference review
+/grill-rag                  RAG system interrogation (cross-persona)
+/grill-etl                  ETL pipeline interrogation (cross-persona)
+/grill-agent                Multi-agent AI interrogation
+/grill-migration            Platform migration interrogation
+
+── WORKFLOWS ─────────────────────────────────────────────
 /change [what changed]      Impact analysis & re-run plan
 /consult [question]         Project-aware expert answer
 /review [artifact]          Structured artifact review
 
-── UTILITIES ─────────────────────────────────────────────
+── STATUS & TRACKING ─────────────────────────────────────
 /scan                       Discover existing SDD, lock decisions, find gaps
-/status                     Current project state
+/status                     Current mode + project state + active blockers
+/tasks                      Task board (in-progress, blocked, resolved)
+/recap                      Session summary
+
+── UTILITIES ─────────────────────────────────────────────
 /adr [decision]             Draft an ADR
 /brainstorm [topic]         Free exploration
 /help                       This list
@@ -134,7 +228,6 @@ Switch to a specific persona without going through the Orchestrator.
 /compare [A] vs [B]         Side-by-side comparison
 /estimate [task]            Effort / cost / complexity
 /risk [topic]               Risk identification
-/recap                      Session summary
 ```
 
 ---
